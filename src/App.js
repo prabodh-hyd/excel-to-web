@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { auth } from './firebase-config'; 
+import React, { useState, useEffect } from 'react'; // Keep this import at the top
+import { auth } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import './App.css';
 
@@ -11,9 +11,10 @@ function App() {
   const [isSignUp, setIsSignUp] = useState(true);
   const [completedTopics, setCompletedTopics] = useState({});
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
 
   const topics = [
-    'React', 'Selenium', 'HTML, CSS, JS', 'NextJS', 'Postman', 
+    'React', 'Selenium', 'HTML, CSS, JS', 'NextJS', 'Postman',
     'UI/UX Design', 'OOPS', 'Basic Java', 'Selenium', 'Android', 'Firebase Authentication'
   ];
 
@@ -30,16 +31,13 @@ function App() {
       'Inserting FAVICONS, Page Titles',
       'Tables, Lists',
     ],
-    
   };
 
-  
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         setIsAuthenticated(true);
-        // Load user data (completed topics) from localStorage or Firebase
         const savedData = localStorage.getItem(`completedTopics_${currentUser.uid}`);
         if (savedData) {
           setCompletedTopics(JSON.parse(savedData));
@@ -52,31 +50,35 @@ function App() {
   }, []);
 
   const handleSignUp = () => {
+    setIsLoading(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setUser(userCredential.user);
         setIsAuthenticated(true);
-      
         localStorage.setItem(`completedTopics_${userCredential.user.uid}`, JSON.stringify({}));
+        setIsLoading(false);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.error(error.message);
         alert('Error signing up: ' + error.message);
       });
   };
 
   const handleSignIn = () => {
+    setIsLoading(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setUser(userCredential.user);
         setIsAuthenticated(true);
-        // Load completed topics from localStorage or Firebase
         const savedData = localStorage.getItem(`completedTopics_${userCredential.user.uid}`);
         if (savedData) {
           setCompletedTopics(JSON.parse(savedData));
         }
+        setIsLoading(false);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.error(error.message);
         alert('Error signing in: ' + error.message);
       });
@@ -106,10 +108,8 @@ function App() {
       [completedKey]: !completedTopics[completedKey],
     };
 
-    // Update completed topics in state
     setCompletedTopics(updatedCompletedTopics);
 
-    // Store updated completed topics in localStorage (or Firebase if preferred)
     if (user) {
       localStorage.setItem(`completedTopics_${user.uid}`, JSON.stringify(updatedCompletedTopics));
     }
@@ -126,15 +126,17 @@ function App() {
             placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             type="password"
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <button onClick={isSignUp ? handleSignUp : handleSignIn}>
-            {isSignUp ? 'Sign Up' : 'Sign In'}
+          <button onClick={isSignUp ? handleSignUp : handleSignIn} disabled={isLoading}>
+            {isLoading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
           </button>
           <p>
             {isSignUp ? 'Already have an account? ' : "Don't have an account? "}

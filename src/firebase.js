@@ -1,8 +1,8 @@
-// Import the functions you need from the SDKs
+// Import the necessary functions from Firebase SDK
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"; // Import Firebase Auth
+import { getAuth } from "firebase/auth";  // Import Firebase Authentication
 
-// Your web app's Firebase configuration
+// Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyANJc4tIKqTBRA0VXNJGxyhmMg3BqxkEk8",
   authDomain: "login-firebase-auth-b82dd.firebaseapp.com",
@@ -12,12 +12,12 @@ const firebaseConfig = {
   appId: "1:704943558942:web:d22cf66c0e9d3e2faab90f",
   measurementId: "G-PPFT3JQLZF"
 };
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication and Analytics
+// Initialize Firebase Authentication
 const auth = getAuth(app);
 
-
-// Export the auth object to use it in other parts of your app
+// Export auth so it can be used in other parts of your application
 export { auth };
