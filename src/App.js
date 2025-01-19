@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'; // Keep this import at the top
+import React, { useState, useEffect } from 'react'; 
 import { auth } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import './App.css';
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
